@@ -1,18 +1,42 @@
-﻿
+﻿using System.Diagnostics.Contracts;
 class SayaTubeVideo
 {
     private int id, playCount;
     private string title;
-    public SayaTubeVideo(string title)
+    public SayaTubeVideo(string ttl)
     {
         Random rand = new Random();
         id = rand.Next(11111, 99999);
-        this.title = title;
+        try
+        {
+            checked
+            {
+                Contract.Requires(ttl.Length <= 200 );
+                Contract.Requires(ttl != null);
+                this.title = ttl;
+            } 
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
         playCount = 0;
     }
     public void IncreasePlayCount(int count)
     {
-        this.playCount += count;
+        try
+        {
+            checked
+            {
+                Contract.Requires(count <= 25000000);
+                Contract.Requires(count > 0);
+                this.playCount += count;
+            }  
+        }catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
     }
     public void PrintVideoDetails()
     {
@@ -39,7 +63,18 @@ class SayaTubeUser
     {
         Random rand = new Random();
         id = rand.Next(11111, 99999);
-        this.username = username;
+        try
+        {
+            checked
+            {
+                Contract.Requires(username.Length <= 100);
+                Contract.Requires(username != null);
+                this.username = username;
+            }
+        }catch(Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
         uploadedVideos = new List<SayaTubeVideo>();
     }
     public int GetTotalVideoPlayCount()
@@ -53,12 +88,25 @@ class SayaTubeUser
     }
     public void AddVideo(SayaTubeVideo video)
     {
-        uploadedVideos.Add(video);
+        try
+        {
+            checked
+            {
+                Contract.Requires(video != null);
+                Contract.Requires(video.getPlayCount() < int.MaxValue);
+                uploadedVideos.Add(video);
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e.Message);
+        }
+
     }
     public void PrintAllVideoPlaycount()
     {
         Console.WriteLine("Username: " + username);
-        for (int i = 0; i < uploadedVideos.Count; i++)
+        for (int i = 0; i < 8; i++)
         {
             Console.WriteLine("Video "+(i+1)+" judul: " + uploadedVideos[i].getTitle());
         }
@@ -86,5 +134,6 @@ class Program
         {
             user.AddVideo(new SayaTubeVideo("Review Film " + judul[i] + " oleh " + username));
         }
+        user.PrintAllVideoPlaycount();
     }
 }
